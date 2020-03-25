@@ -1,27 +1,24 @@
 var columnDefs = [
   { headerName: "Make", field: "make", cellRenderer: "medalCellRenderer" },
   { headerName: "Model", field: "model" },
-  { headerName: "Price", field: "price" },
-  { headerName: "level", field: "level" },
-  { headerName: "expanded", field: "expanded" }
+  { headerName: "Price", field: "price" }
+  // { headerName: "level", field: "level" },
+  // { headerName: "expanded", field: "expanded" }
 ];
 
 var rowData = [
   {
-    customId: "1",
     make: "Toyota",
     model: "Celica",
     price: 35000,
     expanded: false,
     childrens: [
       {
-        customId: "2",
         make: "a",
         model: "b",
         price: 3,
         childrens: [
           {
-            customId: "121",
             make: "asasasdasdasd",
             model: "asdasdasdasdb",
             price: 311111,
@@ -32,7 +29,6 @@ var rowData = [
         expanded: false
       },
       {
-        customId: "3",
         make: "b",
         model: "b",
         price: 4,
@@ -40,7 +36,6 @@ var rowData = [
         expanded: false
       },
       {
-        customId: "4",
         make: "g",
         model: "t",
         price: 7,
@@ -50,14 +45,12 @@ var rowData = [
     ]
   },
   {
-    customId: "5",
     make: "Ford",
     model: "Mondeo",
     price: 32000,
     expanded: false,
     childrens: [
       {
-        customId: "6",
         make: "a",
         model: "b",
         price: 3,
@@ -65,7 +58,6 @@ var rowData = [
         expanded: false
       },
       {
-        customId: "7",
         make: "b",
         model: "b",
         price: 4,
@@ -73,7 +65,6 @@ var rowData = [
         expanded: false
       },
       {
-        customId: "8",
         make: "g",
         model: "t",
         price: 7,
@@ -83,14 +74,12 @@ var rowData = [
     ]
   },
   {
-    customId: "9",
     make: "Porsche",
     model: "Boxter",
     price: 72000,
     expanded: false,
     childrens: [
       {
-        customId: "10",
         make: "qwqweqwew",
         model: "wqweqwewb",
         price: 321,
@@ -98,7 +87,6 @@ var rowData = [
         expanded: false
       },
       {
-        customId: "11",
         make: "bqwwww",
         model: "wqweqweb",
         price: 142,
@@ -106,7 +94,6 @@ var rowData = [
         expanded: false
       },
       {
-        customId: "12",
         make: "gwwww",
         model: "tqweqwee",
         price: 17323,
@@ -116,6 +103,10 @@ var rowData = [
     ]
   }
 ];
+
+// we need to add unique id in every record, so we can detect particular click
+let idCount = 0;
+addIdInDataResurcive(rowData);
 
 // let the grid know which columns and what data to use
 var gridOptions = {
@@ -143,8 +134,6 @@ MedalCellRenderer.prototype.init = function(params) {
   }
 
   this.eventListener = function() {
-    console.log(`clicked`);
-
     updateData(params.data.customId);
   };
   this.eGui.addEventListener("click", this.eventListener);
@@ -161,20 +150,13 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 function updateData(customId) {
-  console.log(customId);
   let foundData = recursiveFindById(rowData, customId);
   if (foundData) {
     foundData.expanded = !foundData.expanded;
-    // rowDataExpanded = JSON.parse(JSON.stringify(rowData));
     rowDataExpanded = [];
     makeDataResurcive(rowData, 0);
     gridOptions.api.setRowData(rowDataExpanded);
   }
-  // let clickedRowIndex = rowData.findIndex(r => r.make == value);
-
-  // rowData[clickedRowIndex].expanded = !rowData[clickedRowIndex].expanded;
-
-  // makeData();
 }
 
 function recursiveFindById(arrayData, customId) {
@@ -199,14 +181,15 @@ function makeDataResurcive(arrayData, level) {
     mainRow.level = level;
     rowDataExpanded.push(mainRow);
     if (mainRow.expanded) {
-      // rowDataExpanded = [...rowDataExpanded, ...childRowData[mainRow.make]];
       makeDataResurcive(mainRow.childrens, level + 10);
     }
   });
 }
 
-// setTimeout(() => {
-//   gridOptions.api.setRowData([
-//     { make: "riddhesh", model: "ganatra", price: 30 }
-//   ]);
-// }, 5000);
+function addIdInDataResurcive(arrayData) {
+  arrayData.forEach(mainRow => {
+    mainRow.customId = idCount;
+    idCount++;
+    addIdInDataResurcive(mainRow.childrens);
+  });
+}
