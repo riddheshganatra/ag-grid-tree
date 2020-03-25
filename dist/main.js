@@ -264,7 +264,8 @@ function recursiveFindById(e, a) {
 function makeDataResurcive(e, a) {
   e.forEach(e => {
     (e.level = a),
-      e.expanded &&
+      e.childrens.length > 0 &&
+        e.expanded &&
         showBlankForExpanded &&
         (e = { ...e, ...blankForExpandedObject }),
       rowDataExpanded.push(e),

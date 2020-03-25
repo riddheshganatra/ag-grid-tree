@@ -326,7 +326,11 @@ function recursiveFindById(arrayData, customId) {
 function makeDataResurcive(arrayData, level) {
   arrayData.forEach(mainRow => {
     mainRow.level = level;
-    if (mainRow.expanded && showBlankForExpanded) {
+    if (
+      mainRow.childrens.length > 0 &&
+      mainRow.expanded &&
+      showBlankForExpanded
+    ) {
       mainRow = { ...mainRow, ...blankForExpandedObject };
     }
     rowDataExpanded.push(mainRow);
